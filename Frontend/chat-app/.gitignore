@@ -11,7 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-chat.txt
+
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +23,5 @@ chat.txt
 *.njsproj
 *.sln
 *.sw?
+
+chat.txt
