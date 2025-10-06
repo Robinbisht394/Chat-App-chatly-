@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { chatState } from "../../context/chatProvider";
-import { sender, fullSenderUserName } from "../../config/appLogic";
+import { sender, fullSenderUserName } from "../../services/appLogic";
 import UserProfileModal from "./UserProfileModal";
 import {
   Box,

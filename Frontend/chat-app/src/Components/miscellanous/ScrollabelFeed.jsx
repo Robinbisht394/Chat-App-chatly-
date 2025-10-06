@@ -1,7 +1,7 @@
 import { Avatar, Tooltip } from "@chakra-ui/react";
 import React from "react";
 import { chatState } from "../../context/chatProvider";
-
+import { isSameSender, SameSenderMargin } from "../../services/appLogic";
 const ScrollabelFeed = ({ messages }) => {
   const { user } = chatState;
   return (
@@ -22,6 +22,7 @@ const ScrollabelFeed = ({ messages }) => {
             <span
               style={{
                 background: m.sender._id != user._id ? "green" : "blue",
+                marginLeft: SameSenderMargin(messages, m, i, user._id),
               }}
             >
               {m.sender.content}

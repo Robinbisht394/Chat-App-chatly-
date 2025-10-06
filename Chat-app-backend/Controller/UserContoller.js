@@ -5,12 +5,25 @@ const bcrypt = require("bcryptjs");
 // signup or register api for user
 const signup = async (req, res) => {
   const { name, email, password, pic } = req.body;
-
+  console.log("SIGNUP_BODY", req.body);
+  // if the user credential not provided
+  if (!name.trim() && !email.trim() && !password.trim()) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: "CREDENTIAL_NOT_PROVIDED",
+        message: "Provide username or email and password",
+      },
+    });
+  }
   try {
     // check if user already exist
     const existUser = await UserModel.findOne({ email });
     if (existUser) {
-      return res.status(400).json({ message: "User already exist" });
+      return res.status(400).json({
+        success: false,
+        error: { code: "USER_ALREADY_EXIST", message: "User already exist" },
+      });
     } else {
       const hashed = await bcrypt.hash(password, 10);
       const newUser = new UserModel({
@@ -22,17 +35,32 @@ const signup = async (req, res) => {
       await newUser.save();
 
       // generating token for new user
-      const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ user: newUser }, process.env.JWT_SECRET, {
         expiresIn: "30d",
       });
       // res.cookie("token", token);
+
       newUser.token = token;
-      return res.status(201).json({ message: "User created", user: newUser });
-      // return res.status(201).json({ msg: "User created", userId: newUser._id });
+      console.log(newUser);
+
+      delete newUser.password;
+
+      return res.status(201).json({
+        success: true,
+        message: "Account created Successfully",
+        user: newUser,
+      });
     }
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err.message });
+    console.log({ type: "SIGNUP_API", error: err.message });
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong try again !",
+      },
+    });
   }
 };
 
@@ -40,47 +68,65 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email.trim() && !password.trim()) {
+    // check for credentials to login
+    res.status(400).json({
+      success: false,
+      error: {
+        code: "CREDENTIAL_NOT_PROVIDED",
+        message: "Provide username or email and password",
+      },
+    });
+  }
+
   try {
     // check if such user exist
     const user = await UserModel.findOne({ email });
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         status: "error",
         code: "USER_NOT_FOUND",
-        message: "User not Found",
+        message: "No such user found",
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-
+    // if passowrd doesn't match
     if (!isMatch)
       return res.status(401).json({
+        success: false,
         status: "error",
         code: "INVALID ID_PASSWORD",
-        message: "email or password is wrong",
+        message: "Email or Password is wrong",
       });
 
     // generating token while login
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ user: user }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-    return res.status(200).json({
+
+    return res.status(201).json({
+      success: true,
       status: "Success",
       message: "Logged in successfully",
       user: { user, token },
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: err.message });
+    console.log({ type: "LOGIN_API", error: err.message });
+    return res.status(500).json({
+      success: false,
+      status: "error",
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong try again !",
+      },
+    });
   }
 };
 
-// api/user?search
+//  /user?search
 const getAllUsers = async (req, res) => {
   const keyword = req.query.search
     ? {
@@ -90,9 +136,17 @@ const getAllUsers = async (req, res) => {
         ],
       }
     : {};
+  console.log("Search", keyword);
 
   const user = await UserModel.find(keyword);
-  res.status(200).json(user);
+  res
+    .status(200)
+    .json({
+      success: true,
+      status: "success",
+      data: user,
+      message: "Users fetched successfully",
+    });
 };
 
 module.exports = { signup, login, getAllUsers };

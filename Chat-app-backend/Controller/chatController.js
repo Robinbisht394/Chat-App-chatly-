@@ -12,6 +12,7 @@ const accessChat = async (req, res) => {
         { users: { $elemMatch: { $eq: req.userId } } },
       ],
     })
+
     .populate("User", select("-password"))
     .populate("latestMessage");
 
@@ -19,10 +20,14 @@ const accessChat = async (req, res) => {
     path: "latestMessage.sender",
     select: "name pic email",
   });
+  console.log("Access chat exist", isChat);
+
   let chatData;
   // if chat exist then send it otherwise create newone
   if (isChat.length > 0) {
-    return res.json({ chat: isChat[0] });
+    return res
+      .status(200)
+      .json({ success: true, status: "success", chat: isChat[0] });
   } else {
     chatData = {
       chatName: "sender",
@@ -38,8 +43,12 @@ const accessChat = async (req, res) => {
       .populate("User", "-password");
     return res.status(200).json({ chat: fullchat });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: err.message });
+    console.log({ api: "Access chat", error: err.message });
+    return res.status(500).json({
+      success: false,
+      status: "failed",
+      message: "Something  went wrong try again",
+    });
   }
 };
 
@@ -53,9 +62,15 @@ const fetchAllchats = async (req, res) => {
       .populate("latestMessage")
       .populate("groupAdmin")
       .sort({ updatedAt: -1 });
-    return res.status(200).json({ chats: chats });
+    return res
+      .status(200)
+      .json({ success: true, status: "success", chats: chats });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.log({ api: "fetch chats", error: err.message });
+
+    return res
+      .status(500)
+      .json({ success: false, status: "success", error: err.message });
   }
 };
 
@@ -73,7 +88,7 @@ const createGroupChat = async (req, res) => {
   if (users.length < 2) {
     return res.status(400).json({
       status: "Error",
-      code: "USER_Error",
+      code: "USER_ERROR",
       message: "Users should be more than two",
     });
   }
@@ -90,7 +105,7 @@ const createGroupChat = async (req, res) => {
     const fullGroupChat = await groupchat
       .findOne({ _id: groupchat._id })
       .popuate("users", "-password")
-      .popuate("grouAdmin", "-password");
+      .popuate("groupAdmin", "-password");
 
     res.status(200).json({ groupchat: fullGroupChat });
   } catch (err) {
@@ -102,7 +117,11 @@ const createGroupChat = async (req, res) => {
 const renameGroup = async (req, res) => {
   const { chatId, chatName } = req.body;
   if (!chatName)
-    return res.status(400).json({ message: "new group name is required" });
+    return res.status(400).json({
+      success: false,
+      status: "Failed",
+      message: "New group name is required",
+    });
   try {
     const groupchat = await chatModel.findByIdAndUpdate(
       chatId,
@@ -114,12 +133,19 @@ const renameGroup = async (req, res) => {
       }
     );
     if (!groupchat) {
-      return res.status(400).json({ message: "Chat Not found" });
+      return res
+        .status(400)
+        .json({ success: false, status: "Failed", message: "Chat Not found" });
     } else {
       return res.status(200).json(groupchat);
     }
   } catch (err) {
     console.log(err);
+    return res.status(500).json({
+      success: false,
+      status: "failed",
+      message: "Something went wrong try again !",
+    });
   }
 };
 // drop user
@@ -135,11 +161,16 @@ const dropUserFromGroup = async (req, res) => {
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
 
-    if (!groupchat) return res.status(400).json({ message: "Chat not found" });
+    if (!groupchat)
+      return res
+        .status(400)
+        .json({ success: false, status: "Failed", message: "Chat not found" });
     return res.status(200).json(groupchat);
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: err.message });
+    return res
+      .status(500)
+      .json({ success: false, status: "Failed", error: err.message });
   }
 };
 // add user
@@ -150,11 +181,20 @@ const addUserToGroup = async (req, res) => {
       .findByIdAndUpdate({ chatId }, { $push: { user: userId } }, { new: true })
       .populate("users", "-password")
       .populate("groupAdmin", "-password");
-    if (groupChat) return res.status(404).json({ message: "Chat not found" });
+    if (groupChat)
+      return res
+        .status(404)
+        .json({ success: false, status: "Failed", message: "Chat not found" });
     return res.status(200).json(groupChat);
   } catch (err) {
     console.log(err, "add user group");
-    return res.staus(200).json({ error: err.message });
+    return res
+      .staus(200)
+      .json({
+        success: false,
+        status: "Failed",
+        error: "Something went wrong try again !",
+      });
   }
 };
 

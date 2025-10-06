@@ -14,11 +14,18 @@ const sendMessage = async (req, res) => {
 
     await chatModel.findByIdAndUpdate(chatID, { lastestMessage: message });
 
-    res.status(200).json(message);
+    res.status(200).json({ success: true, status: "success", message });
   } catch (err) {
-    res.status(500).json({ message: "something went wrong" });
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "something went wrong",
+      },
+    });
   }
 };
+
 const getAllMessage = async (req, res) => {
   const { chatId } = req.body;
 
@@ -28,9 +35,15 @@ const getAllMessage = async (req, res) => {
       .populate("sender", "name email pic")
       .populate("chat")
       .sort({ createdAt: 1 });
-    res.status(200).json(message);
+    res.status(200).json({ success: true, status: "success", message });
   } catch (err) {
-    res.status(500).json({ message: "something went wrong" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        status: "success",
+        message: "something went wrong",
+      });
   }
 };
 

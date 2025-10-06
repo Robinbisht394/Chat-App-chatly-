@@ -1,6 +1,8 @@
 const express = require("express");
 const cookie = require("cookie-parser");
+const dotenv = require("dotenv");
 const cors = require("cors");
+dotenv.config();
 const { Socket } = require("socket.io");
 const http = require("http");
 const app = express();
@@ -9,17 +11,15 @@ const userRoutes = require("./Routes/UserRoutes");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messageRoutes");
 const { dbConnection } = require("./Config/dbConnection");
-const dotenv = require("dotenv");
-dotenv.config();
 
 // middleware
+app.use(cors());
 app.use(express.json());
 app.use(cookie());
-app.use(cors());
 const server = http.createServer(app);
-app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/message", messageRoutes);
 const io = new Socket(server, {
   pingTimeout: 60000,
   cors: {
