@@ -1,14 +1,30 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
-
 import ChatPage from "./pages/chatPage";
-import { Box } from "@chakra-ui/react";
+import Home from "./pages/Home";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <>
+        <Home />
+      </>
+    ),
+  },
+  {
+    path: "/chat",
+    element: (
+      <>
+        <ChatPage />
+      </>
+    ),
+  },
+]);
 function App() {
   return (
     <>
-      <Box width="100vw" height="100vh">
-        <ChatPage />
-      </Box>
+      <RouterProvider router={router} />
     </>
   );
 }

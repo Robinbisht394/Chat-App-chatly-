@@ -10,6 +10,8 @@ import {
   Heading,
   InputGroup,
   useToast,
+  InputRightElement,
+  Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -23,14 +25,14 @@ const Login = () => {
     formState: { errors, isSubmitting },
     reset,
   } = useForm();
-  const { error, data, fetchApi } = useFetchApi();
 
-  // data submit
+  const { error, data, fetchApi } = useFetchApi();
+  const [show, setShow] = useState(false);
+
   const onSubmit = async (formData) => {
-    //  call the api
     await fetchApi("http://localhost:4000/api/user/login", formData);
 
-    if (error?.response.data.code == "USER_NOT_FOUND") {
+    if (error?.response?.data?.code === "USER_NOT_FOUND") {
       toast({
         title: "Error",
         description: error.response.data.message,
@@ -38,7 +40,7 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
-    } else if (error?.response.data.code == "INVALID ID_PASSWORD") {
+    } else if (error?.response?.data?.code === "INVALID_ID_PASSWORD") {
       toast({
         title: "Error",
         description: error.response.data.message,
@@ -46,34 +48,55 @@ const Login = () => {
         duration: 3000,
         isClosable: true,
       });
-    } else {
-      localStorage.setItem("user", data.user);
+    } else if (data) {
+      localStorage.setItem("user", JSON.stringify(data.user));
       toast({
-        title: "login successfull",
+        title: "Login successful",
         description: data.message,
         status: "success",
         duration: 3000,
         isClosable: true,
       });
+      reset();
     }
-
-    reset();
   };
 
-  const [show, setShow] = useState(false);
-
   return (
-    <Box padding="10px" paddingTop="14px" borderRadius="2px">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* email field */}
-        <VStack spacing={4}>
+    <Box
+      minH={"auto"}
+      bg="#0b141a"
+      display="flex"
+      alignItems="start"
+      justifyContent="center"
+    >
+      <Box
+        bg="#111b21"
+        color="white"
+        p={10}
+        rounded="md"
+        shadow="lg"
+        width="100%"
+        maxW="400px"
+        border="1px solid #1f2c33"
+      >
+        <VStack spacing={6} align="stretch">
+          <Heading
+            textAlign="center"
+            fontSize="2xl"
+            fontWeight="bold"
+            color="#25D366"
+          >
+            Chatly Login
+          </Heading>
+
+          {/* Email */}
           <FormControl isInvalid={errors.email}>
-            <FormLabel paddingLeft="2px" marginTop="2px" fontSize="15px">
+            <FormLabel fontSize="sm" color="gray.300">
               Email
             </FormLabel>
             <Input
               type="email"
-              placeholder="enter email"
+              placeholder="Enter your email"
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -81,90 +104,68 @@ const Login = () => {
                   message: "Invalid email address",
                 },
               })}
-              variant="flushed"
-              border={"1px solid grey"}
-              borderColor="gray.300"
-              borderRadius="3px"
-              paddingLeft="1.9px"
-              _invalid={{ borderColor: "gray.300", boxShadow: "none" }}
+              bg="#202c33"
+              border="1px solid #2a3942"
+              _focus={{ borderColor: "#25D366" }}
+              color="white"
+              _placeholder={{ color: "gray.500" }}
             />
-            <FormErrorMessage paddingLeft="3px" margin="5px">
-              {errors.email && errors?.email?.message}
-            </FormErrorMessage>
+            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl
-            paddingLeft="2px"
-            marginTop="2px"
-            fontSize="15px"
-            isInvalid={errors.password}
-          >
-            <FormLabel paddingLeft="2px" marginTop="2px" fontSize="15px">
-              password{" "}
+
+          {/* Password */}
+          <FormControl isInvalid={errors.password}>
+            <FormLabel fontSize="sm" color="gray.300">
+              Password
             </FormLabel>
-            <InputGroup
-              display="flex"
-              border={"1px solid grey"}
-              borderColor="gray.300"
-              padding="2px"
-              borderRadius="3px"
-              _focus={{ borderColor: "blue.500" }}
-              _focusWithin={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px blue.500",
-              }}
-            >
+            <InputGroup>
               <Input
                 type={show ? "text" : "password"}
-                placeholder="enter password"
-                {...register("password", { required: "password is required" })}
-                variant="flushed"
-                _focus={{ boxShadow: "none", borderColor: "transaparent" }}
-                _active={{ border: "none", outline: "none" }}
-                paddingLeft="0px"
-                border={"none"}
-                _invalid={{ borderColor: "gray.300", boxShadow: "none" }}
+                placeholder="Enter your password"
+                {...register("password", { required: "Password is required" })}
+                bg="#202c33"
+                border="1px solid #2a3942"
+                _focus={{ borderColor: "#25D366" }}
+                color="white"
+                _placeholder={{ color: "gray.500" }}
               />
-
-              <Button
-                onClick={() => setShow((prev) => !prev)}
-                variant={"ghost"}
-                bg="none"
-                _focus={{ boxShadow: "none", bg: "transparent" }}
-                _hover={{ bg: "transaparent" }}
-                _active={{ bg: "transaparent" }}
-                width="auto"
-                fontSize="10px"
-                fontWeight="bold"
-              >
-                {show ? (
-                  <AiOutlineEyeInvisible style={{ fontSize: "20px" }} />
-                ) : (
-                  <AiOutlineEye style={{ fontSize: "20px" }} />
-                )}
-              </Button>
+              <InputRightElement>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  color="#25D366"
+                  _hover={{ bg: "transparent" }}
+                  onClick={() => setShow((prev) => !prev)}
+                >
+                  {show ? (
+                    <AiOutlineEyeInvisible style={{ fontSize: "18px" }} />
+                  ) : (
+                    <AiOutlineEye style={{ fontSize: "18px" }} />
+                  )}
+                </Button>
+              </InputRightElement>
             </InputGroup>
-            <FormErrorMessage
-              paddingLeft="4px"
-              mt={1}
-              fontSize={"sm"}
-              color={"red.500"}
-              visibility={errors.password ? "visible" : "hidden"}
-            >
-              {errors.password && errors.password?.message}
-            </FormErrorMessage>
+            <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          {/* submit btn */}
+
+          {/* Submit Button */}
           <Button
             type="submit"
-            colorScheme="blue"
-            width="full"
-            marginTop="7px"
-            disabled={isSubmitting}
+            colorScheme="green"
+            bg="#25D366"
+            _hover={{ bg: "#20bd5f" }}
+            color="black"
+            onClick={handleSubmit(onSubmit)}
+            isLoading={isSubmitting}
           >
-            {isSubmitting ? "Logging" : "Login"}
+            {isSubmitting ? "Logging in..." : "Login"}
           </Button>
+
+          <Text textAlign="center" fontSize="sm" color="gray.400">
+            Secure login • End-to-end encrypted
+          </Text>
         </VStack>
-      </form>
+      </Box>
     </Box>
   );
 };
