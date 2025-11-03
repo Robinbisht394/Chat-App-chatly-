@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { FaSearch, FaBell } from "react-icons/fa";
 import axios from "axios";
-import Sidedrawer from "./SideDrawer";
+import Sidedrawer from "./Sidedrawer";
 import UserProfileModal from "./UserProfileModal";
 import { chatState } from "../../context/chatProvider";
 import { sender } from "../../services/appLogic";
