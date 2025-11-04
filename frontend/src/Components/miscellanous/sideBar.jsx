@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 
 const SideBar = () => {
   const { notification, setNotification, user, setSelectedChat } = chatState();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   const sideDrawer = useDisclosure();
   const userProfileModal = useDisclosure();
   const [search, setSearch] = useState("");
@@ -48,12 +48,10 @@ const SideBar = () => {
 
     try {
       setLoading(true);
-      console.log(search);
 
       const response = await axios.get(
-        `http://localhost:4000/api/v1/user/search?search=${search}`
+        `${backendUrl}/api/v1/user/search?search=${search}`
       );
-      console.log(response.data);
 
       setResult(response?.data?.data);
     } catch (error) {
@@ -83,7 +81,7 @@ const SideBar = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:4000/api/v1/notification",
+        `${backendUrl}/api/v1/notification`,
         notif.chat._id
       );
       console.log(err);

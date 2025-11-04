@@ -20,7 +20,6 @@ import ScrollabelFeed from "./ScrollabelFeed";
 import io from "socket.io-client";
 import axios from "axios";
 
-const endpoint = "http://localhost:4000";
 let socket, selectedChatCompare;
 
 const SingleChat = () => {
@@ -35,7 +34,7 @@ const SingleChat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
   const [istyping, setIsTyping] = useState(false);
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   // Responsive arrow button
   const arrowDisplay = useBreakpointValue({ base: "block", md: "none" });
 
@@ -59,7 +58,7 @@ const SingleChat = () => {
         };
 
         const response = await axios.post(
-          "http://localhost:4000/api/v1/message",
+          `${backendUrl}/api/v1/message`,
           {
             content: newMessage,
             chatId: selectedChat._id,
@@ -87,13 +86,10 @@ const SingleChat = () => {
 
   const sendNotification = async (chat, content) => {
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/v1/notification/",
-        {
-          chat,
-          content,
-        }
-      );
+      const response = await axios.post(`${backendUrl}/api/v1/notification/`, {
+        chat,
+        content,
+      });
       console.log(response);
     } catch (err) {
       console.err(err);
@@ -116,7 +112,9 @@ const SingleChat = () => {
         };
 
         const response = await axios.get(
-          `${endpoint}/api/v1/message/${selectedChat._id}`,
+          `${import.meta.env.VITE_SOCKET_URL}/api/v1/message/${
+            selectedChat._id
+          }`,
           config
         );
 

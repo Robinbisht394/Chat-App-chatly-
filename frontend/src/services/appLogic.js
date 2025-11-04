@@ -15,7 +15,7 @@ export const isSameSender = (messages, m, i, userId) => {
     i < messages.length - 1 &&
     // Check if the next message is from a different sender
     messages[i + 1].sender._id !== m.sender._id &&
-    // Check if the current message is NOT from the logged user (Only show avatar for receiver)
+    // Check if the current message is NOT from the logged user
     m.sender._id !== userId
   );
 };
@@ -43,7 +43,7 @@ export const SameSenderMargin = (messages, m, i, userId) => {
     messages[i + 1].sender._id === m.sender._id && // Next message is from the same sender
     m.sender._id !== userId // And the current message is from the receiver
   ) {
-    return 38; // Space for the avatar + margin (e.g., 32px + 6px margin)
+    return 38;
   }
 
   // 2. If it's the receiver's last message in a sequence (avatar shown) or my message (avatar never shown on left)

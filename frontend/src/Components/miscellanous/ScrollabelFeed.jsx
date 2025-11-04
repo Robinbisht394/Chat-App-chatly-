@@ -27,22 +27,20 @@ const ScrollabelFeedComponent = ({ messages }) => {
                 mb={i === messages.length - 1 ? 0 : 2}
                 justify={isSentByMe ? "flex-end" : "flex-start"}
               >
-                {/* 1. Avatar (Displayed only if sender changes) */}
                 {(isSameSender(messages, m, i, authUser._id) ||
                   isLastMessage(messages, i, authUser._id)) && (
                   <Tooltip
                     label={m.sender.name}
                     hasArrow
                     placement="bottom-start"
-                    mr={1} // Add margin to separate avatar from bubble
+                    mr={1}
                   >
                     <Avatar
                       name={m.sender.name}
                       src={m.sender.pic}
                       size={"sm"}
                       cursor="pointer"
-                      mt="5px" // Align avatar with the start of the bubble
-                      // Use the utility function to apply margin if needed
+                      mt="5px"
                       ml={SameSenderMargin(messages, m, i, authUser._id)}
                     />
                   </Tooltip>
@@ -58,11 +56,11 @@ const ScrollabelFeedComponent = ({ messages }) => {
                     !isSentByMe
                       ? SameSenderMargin(messages, m, i, authUser._id)
                       : 0
-                  } // Apply margin only to receiver's side if no avatar
-                  bg={isSentByMe ? "#005c4b" : "#2a3942"} // 🎨 THEME: Green for sender, gray for receiver
+                  }
+                  bg={isSentByMe ? "#005c4b" : "#2a3942"}
                   color="white"
                   fontWeight="medium"
-                  // Add margin only if the bubble is NOT followed by an avatar
+
                   // mt={isSameUser(messages, m, i) ? 1 : 4}
                   // Add extra margin for the last message in a sequence to align with avatar
                   // mb={isSameUser(messages, m, i) ? 1 : 0}
@@ -80,10 +78,7 @@ const ScrollabelFeedComponent = ({ messages }) => {
                   )}
 
                   {/* Message Content */}
-                  <Text>
-                    {m.content}{" "}
-                    {/* ✅ FIX: Accessing content property directly */}
-                  </Text>
+                  <Text>{m.content} </Text>
                 </Box>
               </Flex>
             );

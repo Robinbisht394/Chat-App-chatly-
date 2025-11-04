@@ -42,7 +42,6 @@ const Home = () => {
         p={{ base: 6, md: 10 }}
         rounded="md"
         boxShadow="lg"
-        // border="1px solid #1f2c33"
       >
         <VStack spacing={6}>
           <Text fontSize="sm" color="gray.400" textAlign="center">

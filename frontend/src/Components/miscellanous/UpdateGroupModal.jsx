@@ -39,7 +39,7 @@ const UpdateGroupModal = ({ children }) => {
     setChatStateList,
     chatStateList,
   } = chatState();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   if (!selectedChat) return null;
 
   const getConfig = () => ({
@@ -65,7 +65,7 @@ const UpdateGroupModal = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axios.put(
-        "/api/chat/dropuser", // ✅ FIX: Use leading slash for API path
+        `${backendUrl}/api/chat/dropuser`, //
         {
           chatId: selectedChat._id,
           userId: userToRemove._id,
@@ -101,7 +101,7 @@ const UpdateGroupModal = ({ children }) => {
     setRenameLoading(true);
     try {
       const response = await axios.put(
-        "http://localhost:4000/api/v1/chat/renamegroupchat",
+        `${backendUrl}/api/v1/chat/renamegroupchat`,
         {
           chatId: selectedChat._id,
           chatName: renameGroup,
@@ -158,7 +158,7 @@ const UpdateGroupModal = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axios.put(
-        "/api/chat/addusers", // ✅ FIX: Use leading slash for API path
+        `${backendUrl}/api/chat/addusers`,
         {
           chatId: selectedChat._id,
           userId: userToAdd._id,
@@ -187,9 +187,8 @@ const UpdateGroupModal = ({ children }) => {
 
     setLoading(true);
     try {
-      // 🛑 CRITICAL BUG FIX: Corrected malformed URL and used template literal
       const { data } = await axios.get(
-        `/api/user?search=${query}`,
+        `${backendUrl}/api/user?search=${query}`,
         getConfig()
       );
       setSearchResults(data);
@@ -209,10 +208,10 @@ const UpdateGroupModal = ({ children }) => {
     try {
       // Use the dropuser endpoint, passing the current user's ID
       const { data } = await axios.put(
-        "/api/chat/dropuser",
+        `${backendUrl}/api/chat/dropuser`,
         {
           chatId: selectedChat._id,
-          userId: user._id, // User removing THEMSELF
+          userId: user._id, // User removing themseolves
         },
         getConfig()
       );
@@ -254,11 +253,7 @@ const UpdateGroupModal = ({ children }) => {
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
-        <ModalContent
-          bg="#202c33" // 🎨 THEME: Dark background
-          color="#e9edef"
-          border="1px solid #2f3b42"
-        >
+        <ModalContent bg="#202c33" color="#e9edef" border="1px solid #2f3b42">
           <ModalHeader
             borderBottom="1px solid #2f3b42"
             textAlign="center"
@@ -279,7 +274,6 @@ const UpdateGroupModal = ({ children }) => {
               borderRadius="md"
             >
               {selectedChat.users.map((u) => (
-                // ✅ CRITICAL FIX: Add explicit return inside map
                 <UserListItem
                   key={u._id}
                   user={u}
@@ -314,7 +308,7 @@ const UpdateGroupModal = ({ children }) => {
               />
               <Button
                 onClick={handleRenameGroup}
-                colorScheme="blue" // ✅ FIX: Correct prop name
+                colorScheme="blue"
                 bg="#00a884"
                 color="white"
                 isLoading={renameLoading}
@@ -329,7 +323,7 @@ const UpdateGroupModal = ({ children }) => {
               <Input
                 type="text"
                 placeholder="Add User to Group (e.g., John)"
-                onChange={handleSearch} // ✅ FIX: Pass the event to handler
+                onChange={handleSearch}
                 bg="#2a3942"
                 color="#e9edef"
                 border="none"
@@ -342,16 +336,17 @@ const UpdateGroupModal = ({ children }) => {
               {loading ? (
                 <Spinner size="sm" color="#00a884" />
               ) : (
-                searchResults?.slice(0, 4).map((u) => (
-                  // ✅ CRITICAL FIX: Add explicit return inside map
-                  <UserCard
-                    key={u._id}
-                    username={u.name}
-                    useremail={u.email}
-                    profilePic={u.pic}
-                    handleFunction={() => handleAddUser(u)}
-                  />
-                ))
+                searchResults
+                  ?.slice(0, 4)
+                  .map((u) => (
+                    <UserCard
+                      key={u._id}
+                      username={u.name}
+                      useremail={u.email}
+                      profilePic={u.pic}
+                      handleFunction={() => handleAddUser(u)}
+                    />
+                  ))
               )}
             </Box>
           </ModalBody>
@@ -359,7 +354,7 @@ const UpdateGroupModal = ({ children }) => {
           <ModalFooter borderTop="1px solid #2f3b42" justifyContent="flex-end">
             <Button
               onClick={handleLeave}
-              bg="red.600" // 🎨 THEME: Use Chakra red for danger
+              bg="red.600"
               color="white"
               isLoading={loading}
               _hover={{ bg: "red.700" }}

@@ -25,7 +25,7 @@ const Signup = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImagefile] = useState(null);
   const [show, setShow] = useState(false);
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   const {
     register,
     handleSubmit,
@@ -67,7 +67,7 @@ const Signup = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/api/v1/user/signup",
+        `${backendUrl}/api/v1/user/signup`,
         payload
       );
 

@@ -7,7 +7,7 @@ import { chatState } from "../context/chatProvider";
 import axios from "axios";
 const ChatPage = () => {
   const { user, selectedChat, notification, setUser } = chatState();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   const fetchNotifications = async () => {
     const config = {
       headers: {
@@ -16,7 +16,7 @@ const ChatPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/v1/notification",
+        `${backendUrl}/api/v1/notification`,
         config
       );
       console.log(response);

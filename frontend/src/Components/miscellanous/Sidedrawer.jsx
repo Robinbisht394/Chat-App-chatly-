@@ -27,7 +27,7 @@ const Sidedrawer = (props) => {
 
   const [loadingChat, setloadingChat] = useState(false);
   const toast = useToast();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   const accessChat = async (userId) => {
     console.log(userId);
 
@@ -52,7 +52,7 @@ const Sidedrawer = (props) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/chat",
+        `${backendUrl}/api/v1/chat`,
         { userId },
         config
       );
@@ -63,7 +63,6 @@ const Sidedrawer = (props) => {
       }
 
       // setSelectedChat(response?.data.chat);
-      console.log(chatStateList);
 
       onClose(); // Close the drawer upon selecting or creating a chat
     } catch (err) {

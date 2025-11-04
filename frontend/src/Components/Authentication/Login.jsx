@@ -19,6 +19,7 @@ import useFetchApi from "../../customHooks/useFetch";
 
 const Login = () => {
   const toast = useToast();
+  const backendUrl = import.meta.env.VITE_API_URL;
   const {
     handleSubmit,
     register,
@@ -31,7 +32,7 @@ const Login = () => {
 
   const onSubmit = async (formData) => {
     const response = await fetchApi(
-      "http://localhost:4000/api/v1/user/login",
+      `${backendUrl}/api/v1/user/login`,
       formData
     );
 

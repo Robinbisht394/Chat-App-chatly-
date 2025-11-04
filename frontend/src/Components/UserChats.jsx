@@ -26,7 +26,7 @@ const UserChats = () => {
   } = chatState();
   const groupModalDisclosure = useDisclosure();
   const toast = useToast();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   // fetch all chats for logged-in user part of
   const fetchUserChats = async () => {
     try {
@@ -36,10 +36,7 @@ const UserChats = () => {
         },
       };
 
-      const response = await axios.get(
-        "http://localhost:4000/api/v1/chat",
-        config
-      );
+      const response = await axios.get(`${backendUrl}/api/v1/chat`, config);
 
       setChatStateList(response?.data?.chats);
     } catch (err) {

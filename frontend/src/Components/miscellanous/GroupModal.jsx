@@ -30,7 +30,7 @@ function GroupModal(props) {
   const [loading, setLoading] = useState(false);
   const { user, chatStateList, setChatStateList } = chatState();
   const toast = useToast();
-
+  const backendUrl = import.meta.env.VITE_API_URL;
   // handle Submit
   const handleSubmit = async () => {
     // group must have two users + current user
@@ -65,7 +65,7 @@ function GroupModal(props) {
       const userIds = selectedUsers.map((u) => u._id);
 
       const response = await axios.post(
-        "http://localhost:4000/api/v1/chat/groupChat",
+        `${backendUrl}/api/v1/chat/groupChat`,
         {
           name: groupchatName,
           users: JSON.stringify(userIds),
@@ -109,7 +109,7 @@ function GroupModal(props) {
 
       // Use the query string instead of the state variable 'search' which might be stale
       const response = await axios.get(
-        `http://localhost:4000/api/v1/user/search?search=${query}`,
+        `${backendUrl}/api/v1/user/search?search=${query}`,
         config
       );
       console.log(response);
@@ -154,7 +154,7 @@ function GroupModal(props) {
     console.log(userToRemove);
 
     setSelectedUsers(
-      selectedUsers.filter((sel) => sel._id !== userToRemove._id) // ✅ FIX: Use sel._id !== userToRemove._id
+      selectedUsers.filter((sel) => sel._id !== userToRemove._id)
     );
   };
 
@@ -166,11 +166,7 @@ function GroupModal(props) {
         isCentered // Center the modal
       >
         <ModalOverlay />
-        <ModalContent
-          bg="#202c33" // 🎨 THEME: Dark background
-          color="#e9edef" // 🎨 THEME: Light text
-          border="1px solid #2f3b42"
-        >
+        <ModalContent bg="#202c33" color="#e9edef" border="1px solid #2f3b42">
           <ModalHeader borderBottom="1px solid #2f3b42">
             Create New Group Chat
           </ModalHeader>
@@ -209,7 +205,7 @@ function GroupModal(props) {
                     key={user._id}
                     user={user}
                     handleFunction={() => handleRemoveUser(user)}
-                    bg="#005c4b" // Themed background for selected user chips
+                    bg="#005c4b"
                     color="white"
                     px={3}
                     py={1}
@@ -226,16 +222,17 @@ function GroupModal(props) {
               {loading ? (
                 <Spinner size="lg" color="#00a884" ml="auto" d="flex" />
               ) : (
-                searchResults?.slice(0, 4).map((user) => (
-                  // ✅ FIX: Use UserCard and ensure it is returned (Implicit return with parentheses)
-                  <UserCard
-                    key={user._id}
-                    username={user.name}
-                    useremail={user.email}
-                    profilePic={user.pic}
-                    handleFunction={() => handleUserAdd(user)}
-                  />
-                ))
+                searchResults
+                  ?.slice(0, 4)
+                  .map((user) => (
+                    <UserCard
+                      key={user._id}
+                      username={user.name}
+                      useremail={user.email}
+                      profilePic={user.pic}
+                      handleFunction={() => handleUserAdd(user)}
+                    />
+                  ))
               )}
             </Box>
           </ModalBody>
@@ -243,7 +240,7 @@ function GroupModal(props) {
           <ModalFooter borderTop="1px solid #2f3b42">
             <Button
               onClick={handleSubmit}
-              bg="#00a884" // 🎨 THEME: Accent button color
+              bg="#00a884"
               color="white"
               _hover={{ bg: "#029e78" }}
             >
